@@ -1,13 +1,16 @@
-FROM ubuntu
+FROM fedora
 MAINTAINER Bill C Riemers https://github.com/docbill
 
-ARG URL=https://download.sublimetext.com/sublime-text_build-3103_amd64.deb
-RUN apt-get update -y && \
-	apt-get install -y sudo curl wget libglib2.0-0 libx11-6 libgtk2.0-0 language-pack-en-base && \
-	wget --quiet --output-document=/tmp/sublime-text.deb "$URL" && \
-	apt-get install -y -f /tmp/sublime-text.deb && \
-	rm -f /tmp/sublime-text.deb && \
-	apt-get clean -y all
+ARG URL=https://download.sublimetext.com/sublime_text_3_build_3103_x64.tar.bz2
+RUN dnf update -y && \
+	dnf install -y sudo curl wget bzip2 tar libX11 gtk2-devel && \
+	dnf clean -y all
+
+RUN wget --quiet --output-document=/tmp/sublime-text.tar.bz2 "$URL" && \
+	(cd /opt ; tar xvvfj /tmp/sublime-text.tar.bz2) && \
+	rm -f /tmp/sublime-text.tar.bz2 && \
+	ln -s /opt/sublime_text/sublime_text  /usr/bin/subl && \
+        ln -s /opt/sublime_text_3 /opt/sublime_text
 
 ADD Dockerfile /Dockerfile
 ADD subl-wrapper /usr/local/bin/subl-wrapper
