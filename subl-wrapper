@@ -4,15 +4,19 @@ then
   /usr/bin/subl "$@"
   exit $?
 fi
-export HOME=/workspace
+if [ -z "$HOME" ]
+then
+  export HOME=/workspace
+fi
 if [ -z "$DISPLAY" -o ! -d "$HOME" ]
 then
-  echo 'Usage: sudo docker run -ti --net=host --rm -e DISPLAY -v $HOME/workspace/:/workspace/ docbill/subl' 2>&1
+  echo 'Usage: sudo docker run -ti --net=host --rm -e DISPLAY -v $HOME/workspace/:/workspace/:z docbill/subl' 2>&1
+  echo '-or-: sudo docker run -ti --net=host --rm -e DISPLAY -e HOME -v "$HOME/:$HOME/:z" docbill/subl' 2>&1
   exit 1
 fi
 cd "$HOME"
 
-values=( $(stat -c '%g %u %U %G' /workspace) )
+values=( $(stat -c '%g %u %U %G' "$HOME") )
 XGID=${values[0]}
 XUID=${values[1]}
 XUSER=${values[2]}
@@ -29,15 +33,15 @@ fi
 if [ "$XUSER" = "UNKNOWN" ]
 then
   XUSER=u$XUID-$XGID
-  if ! ( useradd -u $XUID -g "$XGROUP" -d /workspace $XUSER 2>>/dev/null || usermod -u $XUID -g "$XGROUP" "$XUSER" 2>>/dev/null )
+  if ! ( useradd -u $XUID -g "$XGROUP" -d "$HOME" "$XUSER" 2>>/dev/null || usermod -u $XUID -g "$XGROUP" "$XUSER" 2>>/dev/null )
   then
     XUSER="#$XUID"
   fi
 fi
 # Hook to allow pre-installed software
-if [ -d /opt/sublime-text-3.config -a ! -d /workspace/.config/sublime-text-3 ]
+if [ -d /opt/sublime-text-3.config -a ! -d ".config/sublime-text-3" ]
 then
-  sudo -u u$XUID-$XGID cp -r /opt/sublime-text-3.config /workspace/.config
+  sudo -u u$XUID-$XGID bash -c '([ -d .config ] || mkdir -p .config) && cp -ur /opt/sublime-text-3.config/. .config/.'
 fi 
 exec sudo -u "$XUSER" -g "$XGROUP" /usr/bin/subl "$@"
 

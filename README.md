@@ -13,7 +13,13 @@ If you have already have docker working you can start sublime-text-3 as easily a
 
 	[ -d ~/workspace ] || mkdir ~/workspace
 	xhost local:root
-	docker run -i --net=host --rm -e DISPLAY -v $HOME/workspace/:/workspace/:z docbill/sublime-text-3
+	docker run -i --net=host --rm -e DISPLAY -e HOME -v $HOME:$HOME:z docbill/sublime-text-3
+
+-or- If you wish to restrict sublime-text-3 to a particular workspace:
+
+	[ -d ~/workspace ] || mkdir ~/workspace
+	xhost local:root
+	docker run -i --net=host --rm -e DISPLAY -v "$HOME/workspace/:/workspace/:z" docbill/sublime-text-3
 
 For windows this was a bit more complicated.  I had to make sure Xwin (from
 cygwin) was started with the -listen tcp option, and that security was 
