@@ -39,9 +39,9 @@ then
   fi
 fi
 # Hook to allow pre-installed software
-if [ -d /opt/sublime-text-3.config -a ! -d ".config/sublime-text-3" ]
+if [ -d /opt/sublime_text/config -a ! -d ".config/sublime-text-3" ]
 then
-  sudo -u u$XUID-$XGID bash -c '([ -d .config ] || mkdir -p .config) && cp -ur /opt/sublime-text-3.config/. .config/.'
+  sudo -u u$XUID-$XGID bash -c '([ -d .config ] || mkdir -p .config) && cp -ur /opt/sublime_text/config/. .config/.'
 fi 
 exec sudo -u "$XUSER" -g "$XGROUP" /usr/bin/subl "$@"
 
