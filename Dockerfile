@@ -10,15 +10,13 @@ RUN apt-get update -y && \
 	apt-get clean -y all
 
 ADD Dockerfile /Dockerfile
-ADD subl.sh /root/subl
+ADD subl-wrapper /usr/local/bin/subl-wrapper
 
-RUN chmod 500 /root/subl
+RUN chmod 555 /usr/local/bin/subl-wrapper
 
 VOLUME /workspace
-ENV HOME /workspace
+ENV HOME=/workspace DISPLAY=:0
 WORKDIR /workspace
 
-ENTRYPOINT ["/root/subl"]
-
-
+ENTRYPOINT ["/usr/local/bin/subl-wrapper"]
 

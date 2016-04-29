@@ -1,0 +1,38 @@
+#!/bin/bash -e
+if [ ! -O / ]
+then
+  /usr/bin/subl "$@"
+  exit $?
+fi
+export HOME=/workspace
+if [ -z "$DISPLAY" -o ! -d "$HOME" ]
+then
+  echo 'Usage: sudo docker run -ti --net=host --rm -e DISPLAY -v $HOME/workspace/:/workspace/ docbill/subl' 2>&1
+  exit 1
+fi
+cd "$HOME"
+
+values=( $(stat -c '%g %u %U %G' /workspace) )
+XGID=${values[0]}
+XUID=${values[1]}
+XUSER=${values[2]}
+XGROUP=${values[3]}
+
+if [ "$XGROUP" = "UNKNOWN" ]
+then
+  XGROUP=g$XGID
+  if ! ( groupadd -f -g $XGID "$XGROUP" 2>>/dev/null )
+  then
+    XGROUP="#$XGID"
+  fi
+fi
+if [ "$XUSER" = "UNKNOWN" ]
+then
+  XUSER=u$XUID-$XGID
+  if ! ( useradd -u $XUID -g "$XGROUP" -d /workspace $XUSER 2>>/dev/null || usermod -u $XUID -g "$XGROUP" "$XUSER" 2>>/dev/null )
+  then
+    XUSER="#$XUID"
+  fi
+fi
+exec sudo -u "$XUSER" -g "$XGROUP" /usr/bin/subl "$@"
+
