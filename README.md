@@ -21,7 +21,7 @@ If you have already have docker working you can start sublime-text-3 as easily a
 	xhost local:root
 	docker run -i --net=host --rm -e "DISPLAY=$DISPLAY" -v "$HOME/workspace/:/workspace/:z" docbill/sublime-text-3
 
-Please note: Mavensmate will not automatically install if you have an existing .config/sublime-text-2 or .config/sublime-text-3 folder.
+Please note: It is recommended that you remove any existing .config/sublime-text-2 or .config/sublime-text-3 folders.
 
 For windows this was a bit more complicated.  I had to make sure Xwin (from
 cygwin) was started with the -listen tcp option, and that security was 
