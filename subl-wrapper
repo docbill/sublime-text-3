@@ -34,5 +34,10 @@ then
     XUSER="#$XUID"
   fi
 fi
+# Hook to allow pre-installed software
+if [ -d /opt/sublime-text-3.config -a ! -d /workspace/.config/sublime-text-3 ]
+then
+  sudo -u u$XUID-$XGID cp -r /opt/sublime-text-3.config /workspace/.config
+fi 
 exec sudo -u "$XUSER" -g "$XGROUP" /usr/bin/subl "$@"
 
